@@ -25,7 +25,7 @@ class LocationManager: NSObject, ObservableObject {
 extension LocationManager: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard !locations.isEmpty else { return }
-        print(locations.first)
+        //print(locations.first)
         locationManager.stopUpdatingLocation()  // 권한 요청 후 한번 유저 위치를 받아온 후에는 멈추기. 맵뷰에서 나머지 위치관련한 것들 수행
     }
 }
