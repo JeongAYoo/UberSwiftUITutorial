@@ -28,7 +28,8 @@ struct UberMapViewRepresentable: UIViewRepresentable {
     // 필수
     func updateUIView(_ uiView: UIViewType, context: Context) {
         if let coordinate = locationViewModel.selectedLocationCoordinate {
-            print("DEBUG: Selected location in map view is \(coordinate)")
+            context.coordinator.addAndSelectAnnotation(withCoordinate: coordinate)
+//            print("DEBUG: Selected location in map view is \(coordinate)")
         }
     }
     
@@ -39,13 +40,19 @@ struct UberMapViewRepresentable: UIViewRepresentable {
 
 extension UberMapViewRepresentable {
     class MapCoordinator: NSObject, MKMapViewDelegate {
+        // MARK: - Properties
+        
         /// communicate between UberMapViewRepresentable and MapCoordinator
         let parent: UberMapViewRepresentable
+        
+        // MARK: - Life cycle
         
         init(parent: UberMapViewRepresentable) {
             self.parent = parent
             super.init()
         }
+        
+        // MARK: - MKMapViewDelegate
         
         /// delegate method - when the location of the user was updated
         func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
@@ -56,6 +63,20 @@ extension UberMapViewRepresentable {
             )
             
             parent.mapView.setRegion(region, animated: true)
+        }
+        
+        // MARK: - Helpers
+        
+        func addAndSelectAnnotation(withCoordinate coodinate: CLLocationCoordinate2D) {
+            parent.mapView.removeAnnotations(parent.mapView.annotations)    // 이전의 마커 지우기
+            
+            let anno = MKPointAnnotation()
+            anno.coordinate = coodinate
+            parent.mapView.addAnnotation(anno)
+            parent.mapView.selectAnnotation(anno, animated: true)
+            
+            // zoom map in/out to fit 2 annotations(current location & destination)
+            parent.mapView.showAnnotations(parent.mapView.annotations, animated: true)
         }
     }
 }
