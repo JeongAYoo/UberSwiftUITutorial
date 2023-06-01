@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MapViewActionButton: View {
-    @Binding var showLocationSearchView: Bool
+    @Binding var showLocationSearchView: Bool // bound to HomeView
     
     var body: some View {
         Button {

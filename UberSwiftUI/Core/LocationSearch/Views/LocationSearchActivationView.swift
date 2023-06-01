@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// 지도 위 목적지 검색창
 struct LocationSearchActivationView: View {
     var body: some View {
         HStack {
