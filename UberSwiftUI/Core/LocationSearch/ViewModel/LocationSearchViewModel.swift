@@ -13,7 +13,7 @@ class LocationSearchViewModel: NSObject, ObservableObject {
     // MARK: - Properties
     
     @Published var results = [MKLocalSearchCompletion]()  // 검색 자동완성 결과 저장
-    @Published var selectedLocation: String?    // 선택한 목적지 저장
+    @Published var selectedLocationCoordinate: CLLocationCoordinate2D?    // 선택한 목적지 좌표 저장
     
     private let searchCompleter = MKLocalSearchCompleter()
     var queryFragment: String = "" {    // 검색어
@@ -33,10 +33,30 @@ class LocationSearchViewModel: NSObject, ObservableObject {
     
     // MARK: - Helpers
     
-    func selectLocation(_ location: String) {
-        self.selectedLocation = location
+    func selectLocation(_ localSearch: MKLocalSearchCompletion) {
+        locationSearch(forLocalSearchCompletion: localSearch) { response, error in
+            if let error = error {
+                print("DEBUG: Location search failed with error \(error.localizedDescription)")
+                return
+            }
+            
+            guard let item = response?.mapItems.first else { return }
+            let coordinate = item.placemark.coordinate  // 좌표
+            
+            self.selectedLocationCoordinate = coordinate
+            print("DEBUG: Location coordinates \(coordinate)")
+        }
+    }
+    
+    /// To get real location object by local search
+    /// - MKLocalSearchCompletion: 좌표 포함 X. address 같은 string만 주기 때문
+    func locationSearch(forLocalSearchCompletion localSearch: MKLocalSearchCompletion, completion: @escaping MKLocalSearch.CompletionHandler) {
+        let searchRequest = MKLocalSearch.Request()
+        // query = full address
+        searchRequest.naturalLanguageQuery = localSearch.title.appending(localSearch.subtitle)
         
-        print("DEBUG: Selected location is \(self.selectedLocation)")
+        let search = MKLocalSearch(request: searchRequest)
+        search.start(completionHandler: completion) // when results come back, it comes back in callback or completion handler
     }
 }
 
