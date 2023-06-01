@@ -18,7 +18,7 @@ struct HomeView: View {
             
             if showLocationSearchView {
                 // 검색화면 보여주기
-                LocationSearchView()
+                LocationSearchView(showLocationSearchView: $showLocationSearchView)
             } else {
                 // 검색창만 보여주기
                 LocationSearchActivationView()
