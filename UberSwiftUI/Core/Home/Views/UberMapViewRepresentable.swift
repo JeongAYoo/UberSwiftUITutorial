@@ -13,6 +13,7 @@ struct UberMapViewRepresentable: UIViewRepresentable {
     
     let mapView = MKMapView()
     let locationManager = LocationManager()
+    @Binding var mapState: MapViewState
     @EnvironmentObject var locationViewModel: LocationSearchViewModel
     
     // 필수
@@ -27,10 +28,20 @@ struct UberMapViewRepresentable: UIViewRepresentable {
     
     // 필수
     func updateUIView(_ uiView: UIViewType, context: Context) {
-        if let coordinate = locationViewModel.selectedLocationCoordinate {
-            context.coordinator.addAndSelectAnnotation(withCoordinate: coordinate)
-            context.coordinator.configurePolyline(withDestinationCoordinate: coordinate)
-//            print("DEBUG: Selected location in map view is \(coordinate)")
+        print("DEBUG: Map state is \(mapState)")
+        
+        switch mapState {
+        case .noInput:
+            context.coordinator.clearMapViewAndRecenterOnUserLocation()
+            break
+        case .searchingForLocation:
+            break
+        case .locationSelected:
+            if let coordinate = locationViewModel.selectedLocationCoordinate {
+                context.coordinator.addAndSelectAnnotation(withCoordinate: coordinate)
+                context.coordinator.configurePolyline(withDestinationCoordinate: coordinate)
+                //print("DEBUG: Selected location in map view is \(coordinate)")
+            }
         }
     }
     
@@ -46,6 +57,7 @@ extension UberMapViewRepresentable {
         /// communicate between UberMapViewRepresentable and MapCoordinator
         let parent: UberMapViewRepresentable
         var userLocationCoordinate: CLLocationCoordinate2D?
+        var currentRegion: MKCoordinateRegion?
         
         // MARK: - Life cycle
         
@@ -65,6 +77,8 @@ extension UberMapViewRepresentable {
                 span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
                 // span: zoom
             )
+            
+            self.currentRegion = region     // save user's current region for showing back this area when mapview is clear
             
             parent.mapView.setRegion(region, animated: true)
         }
@@ -120,7 +134,16 @@ extension UberMapViewRepresentable {
                 guard let route = response?.routes.first else { return }
                 completion(route)
             }
+        }
+        
+        /// 기존의 마커, 폴리라인 지우고, 현재 위치 중심으로 region 설정
+        func clearMapViewAndRecenterOnUserLocation() {
+            parent.mapView.removeAnnotations(parent.mapView.annotations)
+            parent.mapView.removeOverlays(parent.mapView.overlays)
             
+            if let currentRegion = currentRegion {
+                parent.mapView.setRegion(currentRegion, animated: true)
+            }
         }
     }
 }
