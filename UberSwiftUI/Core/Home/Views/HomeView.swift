@@ -13,28 +13,39 @@ struct HomeView: View {
     @State private var mapState = MapViewState.noInput
     
     var body: some View {
-        ZStack(alignment: .top) {
-            UberMapViewRepresentable(mapState: $mapState)
-                .ignoresSafeArea()
-            // MapViewActionButton에서 mapState 변경해줌
-            if mapState == .searchingForLocation {
-                // 검색(결과)화면 보여주기
-                LocationSearchView(mapState: $mapState)
-            } else if mapState == .noInput {
-                // 검색창만 보여주기
-                LocationSearchActivationView()
-                    .padding(.top, 72)
-                    .onTapGesture {
-                        withAnimation(.spring()) {  // animation
-                            mapState = .searchingForLocation
+        ZStack(alignment: .bottom) {
+            // map
+            ZStack(alignment: .top) {
+                UberMapViewRepresentable(mapState: $mapState)
+                    .ignoresSafeArea()
+                // MapViewActionButton에서 mapState 변경해줌
+                if mapState == .searchingForLocation {
+                    // 검색(결과)화면 보여주기
+                    LocationSearchView(mapState: $mapState)
+                } else if mapState == .noInput {
+                    // 검색창만 보여주기
+                    LocationSearchActivationView()
+                        .padding(.top, 72)
+                        .onTapGesture {
+                            withAnimation(.spring()) {  // animation
+                                mapState = .searchingForLocation
+                            }
                         }
-                    }
+                }
+                
+                MapViewActionButton(mapState: $mapState) // 검색화면 on/off 여부 전달
+                    .padding(.leading)
+                    .padding(.top, 4)
             }
             
-            MapViewActionButton(mapState: $mapState) // 검색화면 on/off 여부 전달
-                .padding(.leading)
-                .padding(.top, 4)
+            // show ride request view at bottom
+            // when location is selected
+            if mapState == .locationSelected {
+                RideRequestView()
+                    .transition(.move(edge: .bottom))   // slide up from bottom edge
+            }
         }
+        .edgesIgnoringSafeArea(.bottom) // ride request covers bottom safe area
     }
 }
 

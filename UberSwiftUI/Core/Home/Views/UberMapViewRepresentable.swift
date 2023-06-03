@@ -38,9 +38,9 @@ struct UberMapViewRepresentable: UIViewRepresentable {
             break
         case .locationSelected:
             if let coordinate = locationViewModel.selectedLocationCoordinate {
+                print("DEBUG: Selected location in map view is \(coordinate)")
                 context.coordinator.addAndSelectAnnotation(withCoordinate: coordinate)
                 context.coordinator.configurePolyline(withDestinationCoordinate: coordinate)
-                //print("DEBUG: Selected location in map view is \(coordinate)")
             }
         }
     }
@@ -110,6 +110,11 @@ extension UberMapViewRepresentable {
             getDestinationRoute(from: userLocationCoordinate,
                                 to: coordinate) { route in
                 self.parent.mapView.addOverlay(route.polyline)
+                // shrink rect for map view to fit (가려지지 않게)
+                // Ride Request 뷰 높이가 대략 500px 정도
+                let rect = self.parent.mapView.mapRectThatFits(route.polyline.boundingMapRect,
+                                                               edgePadding: .init(top: 64, left: 32, bottom: 500, right: 32))
+                self.parent.mapView.setRegion(MKCoordinateRegion(rect), animated: true)
             }
         }
         

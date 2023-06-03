@@ -13,6 +13,7 @@ struct RideRequestView: View {
             Capsule()
                 .foregroundColor(Color(.systemGray5))
                 .frame(width: 48, height: 6)
+                .padding(.top, 8)
             
             // trip info view
             HStack {
@@ -138,7 +139,9 @@ struct RideRequestView: View {
                     .cornerRadius(10)
             }
         }
+        .padding(.bottom, 24)   // let 맨 아래 버튼 NOT overlap home indicator
         .background(.white)
+        .cornerRadius(16)   // applied after background set
     }
 }
 

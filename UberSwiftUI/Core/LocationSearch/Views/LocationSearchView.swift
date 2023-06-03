@@ -57,10 +57,13 @@ struct LocationSearchView: View {
                     ForEach(viewModel.results, id: \.self) { result in
                         LocationSearchResultCell(title: result.title, subtitle: result.subtitle)
                             .onTapGesture {
-                                // 검색 결과 선택시
-                                viewModel.selectLocation(result)
-//                                showLocationSearchView.toggle()
-                                mapState = .locationSelected
+                                withAnimation(.spring()) {
+                                    // 검색 결과 선택시
+                                    viewModel.selectLocation(result)
+    //                                showLocationSearchView.toggle()
+                                    mapState = .locationSelected
+                                }
+
                             }
                     }
                 }

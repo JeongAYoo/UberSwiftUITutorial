@@ -10,6 +10,7 @@ import SwiftUI
 struct MapViewActionButton: View {
 //    @Binding var showLocationSearchView: Bool // bound to HomeView
     @Binding var mapState: MapViewState
+    @EnvironmentObject var viewModel: LocationSearchViewModel
     
     var body: some View {
         Button {
@@ -29,18 +30,25 @@ struct MapViewActionButton: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
     
+    /**
+     - noInput: 기본 상태
+        - 버튼 탭 -> (사이드 메뉴 오픈. 구현X)
+     - searchingForLocation: 검색 중일때
+        - 버튼 탭 -> 다시 기본 맵뷰로 돌아가기
+     - locationSelected: 장소가 선택된 상태
+        - 버튼 탭 -> 맵뷰 클리어(마커, 폴리라인, 좌표 지우기)
+        - 좌표 = nil, 안지우면 이전 루트 폴리라인 그대로 유지됨
+     */
     func actionForState(_ state: MapViewState) {
         switch state {
         case .noInput:
-            // 기본 상태에서 버튼 탭 -> (사이드 메뉴 오픈. 구현X)
             print("DEBUG: No input")
         case .searchingForLocation:
-            // 검색 중일때 버튼 탭 -> 다시 기본 맵뷰로 돌아가기
             mapState = .noInput
         case .locationSelected:
-            // 장소가 선택된 상태에서 버튼 탭 -> 맵뷰 클리어(마커, 폴리라인 지우기)
             mapState = .noInput
-//            print("DEBUG: Clear map view..")
+            viewModel.selectedLocationCoordinate = nil
+            print("DEBUG: Clear map view..")
         }
     }
     
