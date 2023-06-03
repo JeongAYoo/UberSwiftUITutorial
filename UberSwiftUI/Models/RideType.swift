@@ -46,7 +46,7 @@ enum RideType: Int, CaseIterable, Identifiable {
         
         switch self {
         case .uberX: return distanceInMiles * 1.5 + baseFare
-        case .black: return distanceInMiles * 2.5 + baseFare
+        case .black: return distanceInMiles * 2.0 + baseFare
         case .uberXL: return distanceInMiles * 1.75 + baseFare
         }
     }

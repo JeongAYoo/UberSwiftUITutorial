@@ -40,7 +40,7 @@ struct HomeView: View {
             
             // show ride request view at bottom
             // when location is selected
-            if mapState == .locationSelected {
+            if mapState == .locationSelected || mapState == .polylineAdded {
                 RideRequestView()
                     .transition(.move(edge: .bottom))   // slide up from bottom edge
             }
