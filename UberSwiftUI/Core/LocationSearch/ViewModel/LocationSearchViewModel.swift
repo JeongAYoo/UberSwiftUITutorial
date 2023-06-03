@@ -23,6 +23,8 @@ class LocationSearchViewModel: NSObject, ObservableObject {
         }
     }
     
+    var userLocation: CLLocationCoordinate2D?
+    
     // MARK: - Life cycle
     
     override init() {
@@ -57,6 +59,21 @@ class LocationSearchViewModel: NSObject, ObservableObject {
         
         let search = MKLocalSearch(request: searchRequest)
         search.start(completionHandler: completion) // when results come back, it comes back in callback or completion handler
+    }
+    
+    /// 차종, 거리에 따라 가격 계산
+    func computeRidePrice(forType type: RideType) -> Double {
+        guard let destCoordinate = selectedLocationCoordinate else { return 0.0 }
+        guard let userCoordinate = self.userLocation else { return 0.0 }
+        
+        let userLocation = CLLocation(latitude: userCoordinate.latitude,
+                                      longitude: userCoordinate.longitude)
+        let destination = CLLocation(latitude: destCoordinate.latitude,
+                                     longitude: destCoordinate.longitude)
+        
+        // Compute between 2 points
+        let tripDistanceInMeters = userLocation.distance(from: destination)
+        return type.computePrice(for: tripDistanceInMeters)
     }
 }
 

@@ -12,7 +12,6 @@ struct UberMapViewRepresentable: UIViewRepresentable {
     // UIViewRepresentable - UIKit을 SwiftUI에 맞게 wrapping
     
     let mapView = MKMapView()
-    let locationManager = LocationManager()
     @Binding var mapState: MapViewState
     @EnvironmentObject var locationViewModel: LocationSearchViewModel
     

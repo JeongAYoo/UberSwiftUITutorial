@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct HomeView: View {
-    // 검색화면 on/off
 //    @State private var showLocationSearchView = false
     @State private var mapState = MapViewState.noInput
+    @EnvironmentObject var locationViewModel: LocationSearchViewModel
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -46,6 +46,11 @@ struct HomeView: View {
             }
         }
         .edgesIgnoringSafeArea(.bottom) // ride request covers bottom safe area
+        .onReceive(LocationManager.shared.$userLocation) { location in
+            if let location = location {
+                locationViewModel.userLocation = location
+            }
+        }
     }
 }
 
